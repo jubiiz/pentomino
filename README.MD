@@ -1,4 +1,3 @@
-this is a readme file
-#I've added a line of code
+This project will aim at creating a Pentomino problem solver
 
-oy ok but what if I want to change the file again?
+It will take in a picture from a camera, and output answers for the problems
