@@ -13,3 +13,13 @@ extracting thick lines
     check cv2 docs for line thinning algorithm, then extract remaining lines. check where they are in the grid, and assign which cells are their neighbours OR
         check a box for each cell (0101 thing)
         
+computer representation of the problem : 
+    - from case images computer can determine, for one case, number + which sides are thick (TODO)
+    - loop over every cell img. for each, extract relevant info into Cell object and append to cells list
+    - want to build a list of pentominos : list of lists of tuples (pentominos(pentomino(cell coordinates or cell object)))
+        - codeforces robot factory problem https://codeforces.com/problemset/problem/1600/J
+    - can then check for cell node consistency : cell can't contain num greater than len(pentomino) in wich it images
+    - can check for arc consistency : around the cell, in the same pentomino (the cell is in only 1)
+
+    bref ; need only 1)list of pentominos ; 2) list of cell objects : (contains sides (open vs closed), num, coordinates)
+

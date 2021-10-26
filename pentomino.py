@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 
-PAD = 50
+PAD = 20
 
 def pentomino_from_image(source_file):
     """
@@ -48,13 +48,32 @@ def pentomino_from_image(source_file):
     cv2.imshow("warped", copy)
     cv2.waitKey()
 
+    cropped = copy[PAD:cols-PAD, PAD:cols-PAD]
 
-    print(copy.shape)
+    cv2.namedWindow("cropped", cv2.WINDOW_FREERATIO)
+    cv2.imshow("cropped", cropped)
+    cv2.waitKey()
+
+    # from here on we will be working with the cropped image
+    rows, cols = cropped.shape
     # calculations as to the pixel size of one square
-    sqr_size = int(input("enter the number of squares along one side of the pentomino problem"))
+    num_sqr = int(input("enter the number of squares along one side of the pentomino problem "))
+    # we need a tuple of ints : we can't have half a pixel
+    sqr_size = ((rows-(2*PAD))//num_sqr,(cols-(2*PAD))//num_sqr)
+
+    # loop over every case, add coordinates to a dictionary, along with the cropped image of that tile
+    cases = {}
+    # watch out : margin need to be smaller than PAD
+    margin = PAD
+    for i in range(num_sqr):
+        for j in range(num_sqr):
+            # cell (i, j) = cropped[i:i+1, j:j+1]
+            # could be a function that returns the cropped image
+            case = cropped[(PAD+i*sqr_size[0])-margin:(PAD+(i+1)*sqr_size[0])+margin, (PAD+j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
+            cases[(i, j)] = case
 
 
-    return(0)
+    return(cases)
 
 
 
@@ -62,8 +81,11 @@ def main():
     print("this section is still in development")
 
     # makes a pentomino from a source file
+
     source_file = "images/p1.jpg"
-    pentomino = pentomino_from_image(source_file)
+
+    # extracts a preprocessed image for each cell into a dictionary {(i, j):cv2.img} for every cell coordinate (i, j)
+    cell_images = pentomino_from_image(source_file)
 
 if __name__ == "__main__":
     main()
