@@ -72,6 +72,12 @@ def pentomino_from_image(source_file):
             case = cropped[(PAD+i*sqr_size[0])-margin:(PAD+(i+1)*sqr_size[0])+margin, (PAD+j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
             cases[(i, j)] = case
 
+            """
+            cv2.imshow("case", case)
+            cv2.waitKey(200)
+            cv2.destroyWindow("case")
+            """
+
 
     return(cases)
 
@@ -86,6 +92,7 @@ def main():
 
     # extracts a preprocessed image for each cell into a dictionary {(i, j):cv2.img} for every cell coordinate (i, j)
     cell_images = pentomino_from_image(source_file)
+
 
 if __name__ == "__main__":
     main()
