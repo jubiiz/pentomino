@@ -4,6 +4,12 @@ import os
 
 PAD = 20
 
+class Cell():
+    def __init__(self, value, coordinates, sides):
+        self.value = value
+        self.coordinates = coordinates
+        self.sides = sides
+
 def pentomino_from_image(source_file):
     """
     source_file : string name of img file from cwd (normally images/{imgname}.{img_format})
