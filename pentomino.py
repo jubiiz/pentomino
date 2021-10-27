@@ -10,6 +10,9 @@ class Cell():
         self.coordinates = coordinates
         self.sides = sides
 
+def num_from_cell():
+    #TODO
+
 def pentomino_from_image(source_file):
     """
     source_file : string name of img file from cwd (normally images/{imgname}.{img_format})
