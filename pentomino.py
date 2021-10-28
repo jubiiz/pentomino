@@ -10,7 +10,7 @@ class Cell():
         self.coordinates = coordinates
         self.sides = sides
 
-def num_from_cell():
+#def num_from_cell():
     #TODO
 
 def pentomino_from_image(source_file):
@@ -81,11 +81,25 @@ def pentomino_from_image(source_file):
             case = cropped[(PAD+i*sqr_size[0])-margin:(PAD+(i+1)*sqr_size[0])+margin, (PAD+j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
             cases[(i, j)] = case
 
-            """
+            
             cv2.imshow("case", case)
             cv2.waitKey(200)
             cv2.destroyWindow("case")
-            """
+            
+    # choose if the images are good
+    save = input("do you want to save this batch of images?")
+
+    if save == "yes":
+        for i in range(num_sqr):
+            for j in range(num_sqr):
+                # cell (i, j) = cropped[i:i+1, j:j+1]
+                # could be a function that returns the cropped image
+                case = cropped[(PAD+i*sqr_size[0])-margin:(PAD+(i+1)*sqr_size[0])+margin, (PAD+j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
+                cases[(i, j)] = case
+                save_path = os.path.join(os.getcwd(), "cases/{}_{}.jpg".format(i, j))
+                cv2.imwrite(save_path, case)
+
+            
 
 
     return(cases)

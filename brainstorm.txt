@@ -23,3 +23,13 @@ computer representation of the problem :
 
     bref ; need only 1)list of pentominos ; 2) list of cell objects : (contains sides (open vs closed), num, coordinates)
 
+
+    images on which I can test : 
+    0_4 : is 4
+    0_9 is 4
+    0_15 is 3
+    0_19 is 3
+    7_5 is 4
+    ###recognition doesnt work without cropping
+    ### doesn't really work after either....
+
