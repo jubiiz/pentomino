@@ -57,6 +57,7 @@ def testCells():
     tests = ["0_4.jpg", "0_9.jpg", "0_15.jpg"]
 
     model = tf.keras.models.load_model('digits.model')
+    points = []
 
     for file in tests: 
         # load case image
@@ -66,7 +67,7 @@ def testCells():
         # show image and require cropping
         rows, cols = case.shape
             # this next section records the four corner of the image (from the user)
-        points = []
+        
 
         def get_pt(event, x, y, flags, params):
             if event == cv2.EVENT_RBUTTONDBLCLK or event == cv2.EVENT_LBUTTONDBLCLK:
