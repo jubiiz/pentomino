@@ -33,6 +33,7 @@ def main():
 
     model.save('digits.model')
 
+    
 
 if __name__ == "__main__":
     main()

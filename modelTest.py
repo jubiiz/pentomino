@@ -4,8 +4,55 @@ import numpy as np
 import os
 import cv2
 
+def testMnist():
+    mnist = tf.keras.datasets.mnist
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-def main():
+    # normalize the input data
+    x_train = tf.keras.utils.normalize(x_train, axis=1)
+    x_test = tf.keras.utils.normalize(x_test, axis=1)
+    print(x_test[0])
+    print(x_test[0].shape)
+
+    #test = x_test[0].reshape(784)
+    #print(test.shape)
+
+    model = tf.keras.models.load_model('digits.model')
+    prediction = model.predict(x_test)
+    print(y_test[0])
+    cv2.imshow("image", x_test[0])
+    print(prediction)
+    print(np.argmax(prediction))
+
+def testUncropped():
+    """
+        uncropped does not work : the inside of a case will have to be artificially selected
+    """
+     # list of the names of the cases files to test
+    tests = ["0_4.jpg", "0_9.jpg", "0_15.jpg"]
+
+    model = tf.keras.models.load_model('digits.model')
+
+    for file in tests: 
+        # load case image
+        path = os.path.join(os.getcwd(), "cases/{}".format(file))
+        case = cv2.imread(path, 0)
+        case = cv2.resize(case, (28, 28))
+        case = np.array([case])
+        # normalize input data
+        case = np.invert(case)
+        case = tf.keras.utils.normalize(case, axis=1)
+        print(case.shape)
+        
+        # output prediction
+        prediction = model.predict(case)
+        print(prediction)
+        x = np.argmax(prediction)
+        print(x)
+
+    return(0)
+
+def testCells():
     # list of the names of the cases files to test
     tests = ["0_4.jpg", "0_9.jpg", "0_15.jpg"]
 
@@ -53,8 +100,13 @@ def main():
         case_arr = np.array([case])
 
 
+        # normalize input data
+        case_arr = np.invert(case_arr)
+        norm_case = tf.keras.utils.normalize(case_arr, axis=1)
+        print(norm_case)
+        
         # output prediction
-        prediction = model.predict(case_arr)
+        prediction = model.predict(norm_case)
         print(prediction)
         x = np.argmax(prediction)
         print(x)
@@ -62,6 +114,12 @@ def main():
 
 
     return(0)
+
+def main():
+
+    #testMnist()
+    #testUncropped()
+    testCells()
 
 if __name__ == "__main__":
     main()
