@@ -30,6 +30,7 @@ computer representation of the problem :
     0_15 is 3
     0_19 is 3
     7_5 is 4
+    4_1 is 5
     ###recognition doesnt work without cropping
     ### doesn't really work after either....
 

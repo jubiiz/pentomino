@@ -1,6 +1,7 @@
 # this file has as purpose to evaluate the model with the cases of the pentomino
 import tensorflow as tf
 import numpy as np
+from matplotlib import pyplot as plt
 import os
 import cv2
 
@@ -54,10 +55,10 @@ def testUncropped():
 
 def testCells():
     # list of the names of the cases files to test
-    tests = ["0_4.jpg", "0_9.jpg", "0_15.jpg"]
+    tests = ["4_1.jpg", "0_4.jpg", "0_9.jpg", "0_15.jpg"]
 
     model = tf.keras.models.load_model('digits.model')
-    points = []
+    
 
     for file in tests: 
         # load case image
@@ -67,7 +68,7 @@ def testCells():
         # show image and require cropping
         rows, cols = case.shape
             # this next section records the four corner of the image (from the user)
-        
+        points = []
 
         def get_pt(event, x, y, flags, params):
             if event == cv2.EVENT_RBUTTONDBLCLK or event == cv2.EVENT_LBUTTONDBLCLK:
@@ -104,12 +105,17 @@ def testCells():
         # normalize input data
         case_arr = np.invert(case_arr)
         norm_case = tf.keras.utils.normalize(case_arr, axis=1)
-        print(norm_case)
+
+        print(model)
         
+
+
         # output prediction
         prediction = model.predict(norm_case)
         print(prediction)
         x = np.argmax(prediction)
+        #plt.imshow(norm_case[0], cmap=plt.cm.binary)
+        #plt.show()
         print(x)
         
 
