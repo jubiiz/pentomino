@@ -17,21 +17,21 @@ def main():
     # one input layer
     model.add(tf.keras.layers.Flatten(input_shape=(28, 28)))
     # add to the model two hidden dense layers
-    model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
-    model.add(tf.keras.layers.Dense(128, activation=tf.nn.relu))
+    model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
+    model.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
     # one output layer (the softmax activation function returing a probability distribution for each node)
     model.add(tf.keras.layers.Dense(10, activation=tf.nn.softmax))
 
     # compile and fit the model (like create and train)
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
-    model.fit(x_train, y_train, epochs=20)
+    model.fit(x_train, y_train, epochs=10)
 
     # testing the model
     loss, accuracy = model.evaluate(x_test, y_test)
     print("loss : ", loss)
     print("accuracy : ",  accuracy)
 
-    model.save('digits.model')
+    model.save('models/numext1.h5')
 
     
 

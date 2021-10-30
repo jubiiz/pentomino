@@ -57,7 +57,7 @@ def testCells():
     # list of the names of the cases files to test
     tests = ["4_1.jpg", "0_4.jpg", "0_9.jpg", "0_15.jpg"]
 
-    model = tf.keras.models.load_model('digits.model')
+    model = tf.keras.models.load_model('models/numext1.h5')
     
 
     for file in tests: 
@@ -112,6 +112,7 @@ def testCells():
 
         # output prediction
         prediction = model.predict(norm_case)
+        #cv2.imshow("img", norm_case[0])
         print(prediction)
         x = np.argmax(prediction)
         #plt.imshow(norm_case[0], cmap=plt.cm.binary)
