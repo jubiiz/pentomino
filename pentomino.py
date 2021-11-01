@@ -13,6 +13,33 @@ class Cell():
 #def num_from_cell():
     #TODO
 
+def extract_corners(img):
+    contours, hierarchy = cv2.findContours(img,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    # before
+
+
+    biggest = None
+    max_a = 0
+    cutoff = 20000
+    # biggest contour function taken from https://www.youtube.com/watch?v=qOXDoYUgNlU&t=1440s
+    for cnt in contours:
+        a = cv2.contourArea(cnt)
+        
+        if a > cutoff:
+            print(a)
+            perimeter = cv2.arcLength(cnt, True) #true being the closed param? I guess?
+            approx = cv2.approxPolyDP(cnt, 0.1*perimeter, True)
+            if a > max_a and len(approx) == 4:
+                biggest = approx
+                max_a = a
+    print(biggest)
+    cv2.imshow("contours", contoured)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+    print("shown")
+    points = np.float32(biggest)
+    return(points)
+
 def pentomino_from_image(source_file):
     """
     source_file : string name of img file from cwd (normally images/{imgname}.{img_format})
@@ -20,22 +47,24 @@ def pentomino_from_image(source_file):
     path = os.path.join(os.getcwd(), source_file)
     img = cv2.imread(path, 0)
 
-    # shows the image used
-    cv2.imshow("unprocessed image", img)
-    cv2.waitKey()
 
+    img = cv2.resize(img, (500, 700))
+
+    # this next section records the four corner of the image (automatically)
     #thresholds the image ; we need an image of size approx 300:500 (arbitrary, may be made better)
-    _, copy = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
-    rows, cols = copy.shape
-    print("number of rows and collumns ; ", rows, cols)
+    _, bin = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+    # shows the image used
+    bin = cv2.bitwise_not(bin)
+    cv2.imshow("unprocessed image", bin)
+    cv2.waitKey()    
 
-    # this next section records the four corner of the image (from the user)
-    points = []
+    points = extract_corners(bin)
+    print("extracted")
 
-    def get_pt(event, x, y, flags, params):
-        if event == cv2.EVENT_RBUTTONDBLCLK or event == cv2.EVENT_LBUTTONDBLCLK:
-            print((x, y))
-            points.append([x, y])
+    rows, cols = bin.shape
+    print("number of rows and collumns ; ", rows, cols)    
+
+    # NEED TO CLEAN THIS PART
     
     cv2.namedWindow("gaussian img", cv2.WINDOW_FREERATIO)
     # getting user to input the corners
@@ -111,7 +140,7 @@ def main():
 
     # makes a pentomino from a source file
 
-    source_file = "images/p1.jpg"
+    source_file = "images/p3.jpg"
 
     # extracts a preprocessed image for each cell into a dictionary {(i, j):cv2.img} for every cell coordinate (i, j)
     cell_images = pentomino_from_image(source_file)
