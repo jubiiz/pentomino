@@ -13,8 +13,8 @@ def main():
     # ASSUMES COLS = ROWS
     cardinals = []    
     line = slice(MARGIN,cols-MARGIN)
-    mid_space_0 = slice(0, cols//2)
-    mid_space_1 = slice(cols//2, cols)
+    mid_space_0 = slice(0, MARGIN)
+    mid_space_1 = slice(cols-MARGIN, cols)
 
     # north
     cardinals.append(case[mid_space_0, line])
