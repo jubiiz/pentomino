@@ -105,9 +105,9 @@ def pentomino_from_image(source_file):
             tight_cases[(i, j)] = case_tight
 
             
-            cv2.imshow("case_tight", case_tight)
-            cv2.waitKey(200)
-            cv2.destroyWindow("case_tight")
+            #cv2.imshow("case_tight", case_tight)
+            #cv2.waitKey(50)
+            #cv2.destroyWindow("case_tight")
             
     # choose if the images are good
     save = input("do you want to save this batch of tight cases?")
@@ -117,7 +117,7 @@ def pentomino_from_image(source_file):
             for j in range(num_sqr):
                 # cell (i, j) = cropped[i:i+1, j:j+1]
                 # could be a function that returns the cropped image
-                case = cropped[(PAD+i*sqr_size[0])-margin:(PAD+(i+1)*sqr_size[0])+margin, (PAD+j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
+                case = tight_cases[(i, j)]
                 save_path = os.path.join(os.getcwd(), "tight_cases/{}_{}.jpg".format(i, j))
                 cv2.imwrite(save_path, case)
 
@@ -133,9 +133,9 @@ def pentomino_from_image(source_file):
             loose_cases[(i, j)] = case_loose
 
             
-            cv2.imshow("case_loose", case_loose)
-            cv2.waitKey(200)
-            cv2.destroyWindow("case")
+            #cv2.imshow("case_loose", case_loose)
+            #cv2.waitKey(200)
+            #cv2.destroyWindow("case_loose")
             
     # choose if the images are good
     save = input("do you want to save this batch of loose cases?")
@@ -145,15 +145,14 @@ def pentomino_from_image(source_file):
             for j in range(num_sqr):
                 # cell (i, j) = cropped[i:i+1, j:j+1]
                 # could be a function that returns the cropped image
-                case = cropped[(PAD+i*sqr_size[0])-margin:(PAD+(i+1)*sqr_size[0])+margin, (PAD+j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
-                loose_cases[(i, j)] = case
+                case_loose = loose_cases[(i, j)]
                 save_path = os.path.join(os.getcwd(), "loose_cases/{}_{}.jpg".format(i, j))
-                cv2.imwrite(save_path, case)
+                cv2.imwrite(save_path, case_loose)
 
             
 
 
-    return(cases)
+    return(loose_cases)
 
 
 

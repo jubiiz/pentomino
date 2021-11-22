@@ -30,26 +30,37 @@ def testUncropped():
         uncropped does not work : the inside of a case will have to be artificially selected
     """
      # list of the names of the cases files to test
-    tests = ["0_4.jpg", "0_9.jpg", "0_15.jpg"]
-
-    model = tf.keras.models.load_model('digits.model')
+    
+    tests = []
+    for i in range(20):
+        for j in range(20):
+            tests.append("{}_{}.jpg".format(i, j))
+    model = tf.keras.models.load_model('models/numext1.h5')
 
     for file in tests: 
         # load case image
-        path = os.path.join(os.getcwd(), "cases/{}".format(file))
+        path = os.path.join(os.getcwd(), "tight_cases/{}".format(file))
         case = cv2.imread(path, 0)
         case = cv2.resize(case, (28, 28))
         case = np.array([case])
         # normalize input data
-        case = np.invert(case)
-        case = tf.keras.utils.normalize(case, axis=1)
-        print(case.shape)
+        #print(case[0])
+        #case[0] = case[0]/255.0
         
         # output prediction
+        #plt.imshow(norm_case[0], cmap=plt.cm.binary)
+        #plt.show()
         prediction = model.predict(case)
-        print(prediction)
+        #print(prediction)
         x = np.argmax(prediction)
-        print(x)
+        if prediction[0][x] < 0.6:
+            print("no number (probably) ")
+        
+        else: 
+            print(x)
+            cv2.namedWindow("img", cv2.WINDOW_FREERATIO)
+            cv2.imshow("img", case[0])
+            cv2.waitKey()
 
     return(0)
 
@@ -126,8 +137,8 @@ def testCells():
 def main():
 
     #testMnist()
-    #testUncropped()
-    testCells()
+    testUncropped()
+    #testCells()
 
 if __name__ == "__main__":
     main()
