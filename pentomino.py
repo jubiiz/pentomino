@@ -118,7 +118,6 @@ def pentomino_from_image(source_file):
                 # cell (i, j) = cropped[i:i+1, j:j+1]
                 # could be a function that returns the cropped image
                 case = cropped[(PAD+i*sqr_size[0])-margin:(PAD+(i+1)*sqr_size[0])+margin, (PAD+j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
-                case_tight[(i, j)] = case
                 save_path = os.path.join(os.getcwd(), "tight_cases/{}_{}.jpg".format(i, j))
                 cv2.imwrite(save_path, case)
 
