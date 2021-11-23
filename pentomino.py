@@ -1,9 +1,12 @@
+import os
 import cv2
 import numpy as np
-import os
+from processor import *
+from sides import *
+from numext import *
 
-def main():
-    print("this section is still in development")
-
-if __name__ == "__main__":
-    main()
+class Cell():
+    def __init__(self, value, coordinates, sides):
+        self.value = value
+        self.coordinates = coordinates
+        self.sides = sides
