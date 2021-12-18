@@ -29,10 +29,10 @@ def build_sides(path):
 
     for c in cardinals:
         if is_solid(c):
-            sides.append(1)
+            sides.append("1")
         else:
-            sides.append(0)
-    print(sides)
+            sides.append("0")
+    return(sides)
 
 def is_solid(img):
     thr = max(img.shape) - 5
@@ -44,10 +44,18 @@ def is_solid(img):
     return(0)
 
 def main():
+    sides = []
     for i in range(20):
         for j in range(20):
             path = os.path.join(os.getcwd(), f"loose_cases{os.sep}{i}_{j}.jpg")
-            build_sides(path)
+            sides.append(build_sides(path))
+
+    sides_path = os.path.join(os.getcwd(), "sides/p93.txt")
+    with open(sides_path, "w") as w:
+        for square in sides: 
+            for side in square:
+                    w.write(side)
+            w.write("\n")
 
 if __name__ == "__main__":
     main()
