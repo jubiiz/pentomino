@@ -49,13 +49,18 @@ def main():
         for j in range(20):
             path = os.path.join(os.getcwd(), f"loose_cases{os.sep}{i}_{j}.jpg")
             sides.append(build_sides(path))
-
+    side_len = 20
+    cursor = 0
     sides_path = os.path.join(os.getcwd(), "sides/p93.txt")
     with open(sides_path, "w") as w:
         for square in sides: 
             for side in square:
                     w.write(side)
-            w.write("\n")
+            w.write(" ")
+            cursor += 1
+            if cursor%side_len == 0:
+                w.write("\n")
+                
 
 if __name__ == "__main__":
     main()

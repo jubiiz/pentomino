@@ -34,7 +34,7 @@ def number_extractor(supervision = False):
         prediction = model.predict(case)
         x = np.argmax(prediction)
         if prediction[0][x] < 0.6:
-            pass
+            x = 0
             #print("no number (probably) ")
         
         else: 
@@ -45,7 +45,7 @@ def number_extractor(supervision = False):
                 change = int(input(x))
                 if change: 
                     x = change
-            numbers[(i, j)] = x
+        numbers[(i, j)] = x
                 
 
     return(numbers)
@@ -54,7 +54,15 @@ def number_extractor(supervision = False):
 def main():
 
     numbers = number_extractor(supervision=True)
-    print(numbers)
+    path = os.path.join(os.getcwd(), f"nums{os.sep}p93.txt")
+    with open(path, "w") as w:
+        cursor = 0
+        for num in numbers:
+            w.write(str(numbers[num]))
+            w.write(" ")
+            cursor += 1
+            if cursor %20 == 0:
+                w.write("\n")
 
 if __name__ == "__main__":
     main()
