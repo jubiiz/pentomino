@@ -50,6 +50,18 @@ def number_extractor(supervision = False):
 
     return(numbers)
 
+def nums_from_file(filename):
+    path = f"nums{os.sep}{filename}.txt"
+    with open(path, "r") as r:
+        grid = []
+        row = []
+        for num in r.read():
+            if num != " " and num != "\n":
+                row.append(int(num))
+            elif num == "\n":
+                grid.append(row)
+                row = []
+    return(grid)
 
 def main():
 
@@ -65,4 +77,5 @@ def main():
                 w.write("\n")
 
 if __name__ == "__main__":
-    main()
+    #main()
+    nums_from_file("p93")

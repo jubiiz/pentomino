@@ -43,6 +43,28 @@ def is_solid(img):
     except: AttributeError
     return(0)
 
+def sides_from_file(filename):
+    """
+    from a textfile containing side quadruplets for each square, 
+    it appends the quadruplets to a nxn list where n = the length
+    of the side of the problem
+    """
+    path = f"sides{os.sep}{filename}.txt"
+    with open(path, "r") as r:
+        grid = []
+        row = []
+        square = []
+        for char in r.read():
+            if char == "1" or char == "0":
+                square.append(int(char))
+            elif char == " ":
+                row.append(square)
+                square = []
+            elif char == "\n":
+                grid.append(row)
+                row = []
+    return(grid)
+
 def main():
     sides = []
     for i in range(20):
@@ -63,4 +85,5 @@ def main():
                 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    sides_from_file("p93")
