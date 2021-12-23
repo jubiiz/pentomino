@@ -12,6 +12,7 @@ class Cell():
         self.value = value
         self.coordinates = coordinates
         self.sides = sides
+        self.pentomino = None
 
     def find_neighbors_proxi(self, problem_size):
         """
@@ -71,6 +72,11 @@ class Grid():
                     all_cells.remove(cell)
                 except Exception:
                     print(cell.coordinates)
+
+        # adds all pentomino to cell
+        for p in self.pentominos:
+            for cell in p:
+                cell.pentomino = p
 
         self.domains = {}
         for pentomino in self.pentominos:
@@ -194,31 +200,64 @@ class Grid():
         # node consistency enforced in domain creation
         # enforcing arc consistency
         while True:
-            self.ac3()
+            self.arc_consistency()
             if not self.unique_values():
                 break
         print("logic elimination done")
         self.show_grid()
-        assignment = self.backtrack(dict())
+        
+        assignment = {}
+        for cell in self.domains:
+            if len(self.domains[cell]) == 1:
+                assignment[cell] = self.domains[cell][0]
+
+
         self.update_values(assignment)
         print("solved")
 
-    def ac3(self):
+    def arc_consistency(self):
         # add arcs to a list of all arcs
-        self.arcs = []
+        self.cc_arcs = [] # cell cell arcs
+        self.cp_arcs = [] # cell pentomino arcs
         for cellx in self.domains:
             for celly in self.neighbors(cellx):
-                self.arcs.append((cellx, celly))
+                self.cc_arcs.append((cellx, celly))
+                cp_arc = (cellx, celly.pentomino)
+                if cp_arc not in self.cp_arcs and celly.pentomino is not cellx.pentomino: 
+                    self.cp_arcs.append(cp_arc)
         
-        while len(self.arcs) != 0:
-            cellx, celly = self.arcs.pop()
-            if self.arc_reduce(cellx, celly):
-                if len(self.domains[cellx]) == 0:
-                    print("error during arc-consistency: cannot make arc consistent")
-                    return(False)
-                for cellz in self.neighbors(cellx):
-                    if cellz != celly:
-                        self.arcs.append((cellz, cellx))
+        # check every arc, if they have to be changed then add all new arcs to list
+        while True:
+            if len(self.cc_arcs) != 0:
+                cellx, celly = self.cc_arcs.pop()
+                if cellx.coordinates == (19, 13):
+                    print("here_cc")
+                if self.arc_reduce_cc(cellx, celly):
+                    if len(self.domains[cellx]) == 0:
+                        print("error during arc-consistency: cannot make arc consistent")
+                        return(False)
+                    for cellz in self.neighbors(cellx):
+                        if cellz != celly:
+                            self.cc_arcs.append((cellz, cellx))
+                        if (cellz, cellx.pentomino) not in self.cp_arcs:
+                            self.cp_arcs.append((cellz, cellx.pentomino))
+
+            elif len(self.cp_arcs) != 0:
+                print("cp")
+                # check consistency between cellx and pentomino_y
+                cellx, py = self.cp_arcs.pop()
+                if cellx.coordinates == (19, 13):
+                    print("here_cp")
+                if self.arc_reduce_cp(cellx, py):
+                    if len(self.domains[cellx]) == 0:
+                        print(f"error during arc-consistency-cp: cannot make arc consistent because of cell {cellx.coordinates}")
+                        return(False)
+                    for cellz in self.neighbors(cellx):
+                        self.cc_arcs.append((cellz, cellx))
+                        if (cellz, cellx.pentomino) not in self.cp_arcs and cellz.pentomino is not cellx.pentomino:
+                            self.cp_arcs.append((cellz, cellx.pentomino))
+            else:
+                break
 
         for cell in self.domains:
             domain = self.domains[cell]
@@ -281,7 +320,7 @@ class Grid():
                 assignment.pop(cell) 
         return(False)                
 
-    def arc_reduce(self, cellx, celly):
+    def arc_reduce_cc(self, cellx, celly):
         change = False
         for vx in self.domains[cellx]:
             possible_variable = False # does there exist a variable in the domain of celly such that cellx and celly are consistent
@@ -291,6 +330,24 @@ class Grid():
             if possible_variable == False:
                 self.domains[cellx].remove(vx)
                 change = True
+        return(change)
+
+    def arc_reduce_cp(self, cellx, py):
+        """
+        for every value in cellx,
+        can py be completed?
+        """
+        affected_cells = self.neighbors(cellx)
+        change = False
+        for vx in self.domains[cellx]:
+            if vx in range(1, len(py)+1): # if vx has to be in py, check if it can still be there
+                present = False
+                for p_cell in py: # is there at least 1 cell that can take that value
+                    if vx in self.domains[p_cell] and p_cell not in affected_cells: # value is present in this cell's domain, and is unaffected by vx
+                        present = True
+                if present == False: # cannot have this value in the pentomino
+                    change = True
+                    self.domains[cellx].remove(vx)
         return(change)
 
     def order_domain_values(self, cell):
