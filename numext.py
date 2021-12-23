@@ -34,7 +34,7 @@ def number_extractor(supervision = False):
         prediction = model.predict(case)
         x = np.argmax(prediction)
         if prediction[0][x] < 0.6:
-            pass
+            x = 0
             #print("no number (probably) ")
         
         else: 
@@ -45,16 +45,37 @@ def number_extractor(supervision = False):
                 change = int(input(x))
                 if change: 
                     x = change
-            numbers[(i, j)] = x
+        numbers[(i, j)] = x
                 
 
     return(numbers)
 
+def nums_from_file(filename):
+    path = f"nums{os.sep}{filename}.txt"
+    with open(path, "r") as r:
+        grid = []
+        row = []
+        for num in r.read():
+            if num != " " and num != "\n":
+                row.append(int(num))
+            elif num == "\n":
+                grid.append(row)
+                row = []
+    return(grid)
 
 def main():
 
     numbers = number_extractor(supervision=True)
-    print(numbers)
+    path = os.path.join(os.getcwd(), f"nums{os.sep}p93.txt")
+    with open(path, "w") as w:
+        cursor = 0
+        for num in numbers:
+            w.write(str(numbers[num]))
+            w.write(" ")
+            cursor += 1
+            if cursor %20 == 0:
+                w.write("\n")
 
 if __name__ == "__main__":
-    main()
+    #main()
+    nums_from_file("p93")
