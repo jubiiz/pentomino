@@ -12,8 +12,8 @@ def testMnist():
     # normalize the input data
     x_train = tf.keras.utils.normalize(x_train, axis=1)
     x_test = tf.keras.utils.normalize(x_test, axis=1)
-    print(x_test[0])
-    print(x_test[0].shape)
+    
+    
 
     #test = x_test[0].reshape(784)
     #print(test.shape)
@@ -35,25 +35,32 @@ def testUncropped():
     for i in range(20):
         for j in range(20):
             tests.append("{}_{}.jpg".format(i, j))
-    model = tf.keras.models.load_model('models/numext1.h5')
+    model = tf.keras.models.load_model('models/numext3.h5')
+
+    """"""
+
 
     for file in tests: 
         # load case image
         path = os.path.join(os.getcwd(), "tight_cases/{}".format(file))
         case = cv2.imread(path, 0)
-        case = cv2.resize(case, (28, 28))
+        case = cv2.resize(case, (64, 64))
         case = np.array([case])
         # normalize input data
         #print(case[0])
         #case[0] = case[0]/255.0
-        
+            
         # output prediction
         #plt.imshow(norm_case[0], cmap=plt.cm.binary)
         #plt.show()
+        case = np.expand_dims(case, axis=-1) # <--- add batch axis
+        case = case.astype('float32') / 255
+
         prediction = model.predict(case)
-        #print(prediction)
+        print(prediction)
         x = np.argmax(prediction)
-        if prediction[0][x] < 0.6:
+        
+        if x == 0:
             print("no number (probably) ")
         
         else: 
