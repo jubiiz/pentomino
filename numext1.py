@@ -12,7 +12,8 @@ def number_extractor(supervision = False):
        num = 0 if there is no number 
     """
     # load the model from which to predict
-    model = tf.keras.models.load_model('models/numext1.h5')
+    model = tf.keras.models.load_model('models/numext2.h5')
+    model2 = tf.keras.models.load_model('models/numext3.h5')
 
 
     numbers = {}
@@ -28,15 +29,24 @@ def number_extractor(supervision = False):
         # load case image
         path = os.path.join(os.getcwd(), f"tight_cases/{i}_{j}.jpg")
         case = cv2.imread(path, 0)
-        case = cv2.resize(case, (28, 28))
+        case = cv2.resize(case, (64, 64))
         case = np.array([case])
+
         
+
+        case = np.expand_dims(case, axis=-1) # <--- add batch axis
+        case = case.astype('float32') / 255
+
         # predict and append value to dictionary
         prediction = model.predict(case)
         x = np.argmax(prediction)
-        if prediction[0][x] < 0.6:
-            x = 0
-            #print("no number (probably) ")
+        if x == 1:
+            avg = np.average(case)
+            if avg < 0.00001:
+                x = 0
+                print("no number (probably) ")
+            else:
+                print("1 here")
         
         else: 
             cv2.namedWindow("img", cv2.WINDOW_FREERATIO)
@@ -67,7 +77,7 @@ def nums_from_file(filename):
 def main():
 
     numbers = number_extractor(supervision=True)
-    path = os.path.join(os.getcwd(), f"nums{os.sep}p93.txt")
+    path = os.path.join(os.getcwd(), f"nums{os.sep}p93_v2.txt")
     with open(path, "w") as w:
         cursor = 0
         for num in numbers:
@@ -78,5 +88,5 @@ def main():
                 w.write("\n")
 
 if __name__ == "__main__":
-    #main()
-    nums_from_file("p93")
+    main()
+    #nums_from_file("p93")

@@ -35,7 +35,7 @@ def testUncropped():
     for i in range(20):
         for j in range(20):
             tests.append("{}_{}.jpg".format(i, j))
-    model = tf.keras.models.load_model('models/numext3.h5')
+    model = tf.keras.models.load_model('models/numext2.h5')
 
     """"""
 
