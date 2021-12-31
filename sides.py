@@ -7,6 +7,13 @@ MARGIN = 10
 
 def build_sides(path):    
     case = cv2.imread(path, 0)
+    case = cv2.resize(case, (64, 64))
+    # further filtering to ensure that the small sides are gone
+    # erosion filter taken from https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html#morphological-ops
+    kernel = np.ones((5,5),np.uint8)
+    case = cv2.erode(case, kernel, iterations = 1)  
+
+
     rows, cols = case.shape
     # we want to check the four rectangle ROI, from the center to each side, having dimensions of rows(should=cols)/2x(cols-2margin)
     # north east south west
@@ -32,6 +39,13 @@ def build_sides(path):
             sides.append("1")
         else:
             sides.append("0")
+        
+    print(sides)
+    """
+    cv2.imshow("case", case)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    """
     return(sides)
 
 def is_solid(img):
@@ -67,23 +81,23 @@ def sides_from_file(filename):
 
 def main():
     sides = []
-    for i in range(20):
-        for j in range(20):
-            path = os.path.join(os.getcwd(), f"loose_cases{os.sep}{i}_{j}.jpg")
+    rows, cols = 5, 5
+    for i in range(rows):
+        for j in range(cols):
+            path = os.path.join(os.getcwd(), f"loose_cases{os.sep}p5{os.sep}{i}_{j}.jpg")
             sides.append(build_sides(path))
-    side_len = 20
     cursor = 0
-    sides_path = os.path.join(os.getcwd(), "sides/p93.txt")
+    sides_path = os.path.join(os.getcwd(), "sides/p5.txt")
     with open(sides_path, "w") as w:
         for square in sides: 
             for side in square:
                     w.write(side)
             w.write(" ")
             cursor += 1
-            if cursor%side_len == 0:
+            if cursor%rows == 0:
                 w.write("\n")
                 
 
 if __name__ == "__main__":
-    #main()
-    sides_from_file("p93")
+    main()
+    #sides_from_file("p93")

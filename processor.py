@@ -3,6 +3,7 @@ import numpy as np
 import os
 
 PAD = 10
+FILENAME = "p5"
 
 
 
@@ -36,7 +37,7 @@ def pentomino_from_image(source_file):
     img = cv2.imread(path, 0)
 
 
-    img = cv2.resize(img, (800, 900))
+    img = cv2.resize(img, (400, 450))
 
     # this next section records the four corner of the image (automatically)
     #thresholds the image ; we need an image of size approx 300:500 (arbitrary, may be made better)
@@ -47,6 +48,7 @@ def pentomino_from_image(source_file):
     cv2.waitKey()    
 
     points = extract_corners(bin)
+    print(points)
     print("extracted")
 
     rows, cols = bin.shape
@@ -58,7 +60,7 @@ def pentomino_from_image(source_file):
     # taken from https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_geometric_transformations/py_geometric_transformations.html#geometric-transformations
     # pretty much directly (as much as there's not many ways to get the same thing...)
     pts1 = np.float32(points)
-    pts2 = np.float32([[cols-PAD, PAD], [PAD, PAD], [PAD, cols-PAD], [cols-PAD, cols-PAD]])
+    pts2 = np.float32([[PAD, PAD],[PAD, cols-PAD], [cols-PAD, cols-PAD], [cols-PAD, PAD]])
     print(pts1, pts2)
     M = cv2.getPerspectiveTransform(pts1,pts2)
     copy = cv2.warpPerspective(bin,M,(cols,rows))
@@ -99,9 +101,9 @@ def pentomino_from_image(source_file):
             tight_cases[(i, j)] = case_tight
 
             
-            #cv2.imshow("case_tight", case_tight)
-            #cv2.waitKey(50)
-            #cv2.destroyWindow("case_tight")
+            cv2.imshow("case_tight", case_tight)
+            cv2.waitKey(50)
+            cv2.destroyWindow("case_tight")
             
     # choose if the images are good
     save = input("do you want to save this batch of tight cases?")
@@ -112,7 +114,7 @@ def pentomino_from_image(source_file):
                 # cell (i, j) = cropped[i:i+1, j:j+1]
                 # could be a function that returns the cropped image
                 case = tight_cases[(i, j)]
-                save_path = os.path.join(os.getcwd(), "tight_cases/{}_{}.jpg".format(i, j))
+                save_path = os.path.join(os.getcwd(), "tight_cases/{}/{}_{}.jpg".format(FILENAME, i, j))
                 cv2.imwrite(save_path, case)
 
 
@@ -127,9 +129,9 @@ def pentomino_from_image(source_file):
             loose_cases[(i, j)] = case_loose
 
             
-            #cv2.imshow("case_loose", case_loose)
-            #cv2.waitKey(200)
-            #cv2.destroyWindow("case_loose")
+            cv2.imshow("case_loose", case_loose)
+            cv2.waitKey(200)
+            cv2.destroyWindow("case_loose")
             
     # choose if the images are good
     save = input("do you want to save this batch of loose cases?")
@@ -140,7 +142,7 @@ def pentomino_from_image(source_file):
                 # cell (i, j) = cropped[i:i+1, j:j+1]
                 # could be a function that returns the cropped image
                 case_loose = loose_cases[(i, j)]
-                save_path = os.path.join(os.getcwd(), "loose_cases/{}_{}.jpg".format(i, j))
+                save_path = os.path.join(os.getcwd(), "loose_cases/{}/{}_{}.jpg".format(FILENAME, i, j))
                 cv2.imwrite(save_path, case_loose)
 
             
@@ -155,7 +157,7 @@ def main():
 
     # makes a pentomino from a source file
 
-    source_file = "images/p3.jpg"
+    source_file = f"images/{FILENAME}.jpg"
 
     # extracts a preprocessed image for each cell into a dictionary {(i, j):cv2.img} for every cell coordinate (i, j)
     cell_images = pentomino_from_image(source_file)
