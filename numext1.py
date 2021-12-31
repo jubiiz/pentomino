@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import os
 import cv2
 
-def number_extractor(supervision = False):
+def number_extractor(supervision = False, size=(20, 20)):
     """
        extracts the numbers from the grid
        Returns a dictionary "numbers" of (x, y):num pairs
@@ -20,15 +20,16 @@ def number_extractor(supervision = False):
 
     # list of the names of the cases files to test
     tests = []
-    for i in range(20):
-        for j in range(20):
+    for i in range(size[0]):
+        for j in range(size[1]):
             tests.append((i, j))
     
 
     for i, j in tests: 
         # load case image
-        path = os.path.join(os.getcwd(), f"tight_cases/{i}_{j}.jpg")
+        path = os.path.join(os.getcwd(), f"tight_cases/p5/{i}_{j}.jpg")
         case = cv2.imread(path, 0)
+        print(case.shape)
         case = cv2.resize(case, (64, 64))
         case = np.array([case])
 
@@ -75,16 +76,16 @@ def nums_from_file(filename):
     return(grid)
 
 def main():
-
-    numbers = number_extractor(supervision=True)
-    path = os.path.join(os.getcwd(), f"nums{os.sep}p93_v2.txt")
+    rows, cols = 5, 5
+    numbers = number_extractor(supervision=True, size=(rows, cols))
+    path = os.path.join(os.getcwd(), f"nums{os.sep}p5.txt")
     with open(path, "w") as w:
         cursor = 0
         for num in numbers:
             w.write(str(numbers[num]))
             w.write(" ")
             cursor += 1
-            if cursor %20 == 0:
+            if cursor %rows == 0:
                 w.write("\n")
 
 if __name__ == "__main__":

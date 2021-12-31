@@ -38,7 +38,7 @@ class Grid():
 
         Then builds a list of pentomino from edge information
         """
-        self.size = (20, 20)
+        self.size = (5, 5)
 
         # extracts info from text files
         sides_list = sides_from_file(sides_file)
@@ -46,8 +46,7 @@ class Grid():
 
         # builds array of cells
         self.cells = []
-        # 1d list of cells for pentomino frontier search
-        all_cells = []
+        all_cells = []   # 1d list of cells for pentomino frontier search
         row = []
         for i in range(len(num_list)):
             num_row = num_list[i]
@@ -90,8 +89,8 @@ class Grid():
 
     def show_grid(self):
         fig, ax = plt.subplots()
-        ax.set_xlim(left=0, right=20)
-        ax.set_ylim(bottom=0, top=20)
+        ax.set_xlim(left=0, right=self.size[1])
+        ax.set_ylim(bottom=0, top=self.size[0])
         ax.invert_yaxis()
         minor_ticks = np.linspace(0, self.size[0], self.size[0]+1)
         ax.set_xticks(minor_ticks)
@@ -379,7 +378,7 @@ class Grid():
         while len(frontier) != 0:           
             p_current = frontier.pop()
             pentomino.append(p_current)
-            # adds all neighbours that arent already in p_current to p_current
+            # adds all neighbours that arent already in frontier or pentomino to frontier
             for i in range(len(p_current.sides)):
                 side = p_current.sides[i]
                 if side == 0: # if there is no side here, there is neighbour beside
@@ -392,11 +391,16 @@ class Grid():
                     # if it's not already explored, add it to frontier
                     if new_cell not in pentomino and new_cell not in frontier:
                         frontier.append(new_cell)
+        if len(pentomino) > 5:
+            print("pentomino error ")
+            for cell in pentomino:
+                print(cell.coordinates)
+            return(1)
         return(pentomino)
 
 
 def main():
-    grid = Grid("p93_corrected", "p93")
+    grid = Grid("p5", "p5")
     grid.show_grid()
     grid.solve()
     grid.show_grid()
