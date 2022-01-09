@@ -120,7 +120,7 @@ class GridCreator():
         self.fig.canvas.mpl_disconnect(self.cidrelease)
 
 def main():
-    g = GridCreator("p5", (5, 5))
+    g = GridCreator("p6", (5, 5))
     g.show_grid()
     input("please modify the sides by dragging from cell to cell")
     g.update_file()

@@ -4,7 +4,7 @@ import numpy as np
 import math
 from processor import *
 from sides import *
-from numext import *
+from numext1 import *
 from matplotlib import pyplot as plt
 
 class Cell():
@@ -298,20 +298,11 @@ class Grid():
         if self.is_complete(assignment):
             return(assignment)
         cell = self.select_unassigned_cell(assignment)
-        #if len(self.domains[cell]) != 1:
-            #print(len(assignment))
         print(len(assignment))
         odv = self.order_domain_values(cell) # ordered domain values
         for value in odv:
-            #print("cell: ", cell.coordinates, "value", value)
             assignment[cell] = value
             if self.is_consistent(assignment):
-                
-                """                if len(assignment) == 98:
-                    self.update_values(assignment)
-                    self.show_grid()
-                    plt.ion()
-                    print("shown")"""
                 result = self.backtrack(assignment)
                 if result != False: 
                     return(result)
@@ -400,7 +391,7 @@ class Grid():
 
 
 def main():
-    grid = Grid("p5", "p5")
+    grid = Grid("p6", "p6")
     grid.show_grid()
     grid.solve()
     grid.show_grid()

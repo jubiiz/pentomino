@@ -10,8 +10,8 @@ def build_sides(path):
     case = cv2.resize(case, (64, 64))
     # further filtering to ensure that the small sides are gone
     # erosion filter taken from https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html#morphological-ops
-    kernel = np.ones((5,5),np.uint8)
-    case = cv2.erode(case, kernel, iterations = 1)  
+    #kernel = np.ones((5,5),np.uint8)
+    #case = cv2.erode(case, kernel, iterations = 1)  
 
 
     rows, cols = case.shape
@@ -84,10 +84,10 @@ def main():
     rows, cols = 5, 5
     for i in range(rows):
         for j in range(cols):
-            path = os.path.join(os.getcwd(), f"loose_cases{os.sep}p5{os.sep}{i}_{j}.jpg")
+            path = os.path.join(os.getcwd(), f"loose_cases{os.sep}p6{os.sep}{i}_{j}.jpg")
             sides.append(build_sides(path))
     cursor = 0
-    sides_path = os.path.join(os.getcwd(), "sides/p5.txt")
+    sides_path = os.path.join(os.getcwd(), "sides/p6.txt")
     with open(sides_path, "w") as w:
         for square in sides: 
             for side in square:
@@ -100,4 +100,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    #sides_from_file("p93")

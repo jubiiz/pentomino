@@ -13,7 +13,6 @@ def number_extractor(supervision = False, size=(20, 20)):
     """
     # load the model from which to predict
     model = tf.keras.models.load_model('models/numext2.h5')
-    model2 = tf.keras.models.load_model('models/numext3.h5')
 
 
     numbers = {}
@@ -27,10 +26,17 @@ def number_extractor(supervision = False, size=(20, 20)):
 
     for i, j in tests: 
         # load case image
-        path = os.path.join(os.getcwd(), f"tight_cases/p5/{i}_{j}.jpg")
+        path = os.path.join(os.getcwd(), f"tight_cases/p6/{i}_{j}.jpg")
         case = cv2.imread(path, 0)
-        print(case.shape)
         case = cv2.resize(case, (64, 64))
+
+        # potential roi focus needed
+        case = case[12:52, 12:52]
+        case = cv2.resize(case, (64, 64))
+
+        # potential dilation needed
+        case = cv2.dilate(case,np.ones(3),iterations = 1)
+
         case = np.array([case])
 
         
@@ -78,7 +84,7 @@ def nums_from_file(filename):
 def main():
     rows, cols = 5, 5
     numbers = number_extractor(supervision=True, size=(rows, cols))
-    path = os.path.join(os.getcwd(), f"nums{os.sep}p5.txt")
+    path = os.path.join(os.getcwd(), f"nums{os.sep}p6.txt")
     with open(path, "w") as w:
         cursor = 0
         for num in numbers:
@@ -90,4 +96,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    #nums_from_file("p93")

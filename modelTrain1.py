@@ -44,9 +44,7 @@ def main():
 
 
 def load_data():
-    # sets path as the path to the "gtsrb-small" folder
     path = os.path.join(os.getcwd(), "training_data")
-    # opens the "gtsrb-small" directory
     directory = os.scandir(path)
 
     # creates two empty lists containing the images and their corresponding labels

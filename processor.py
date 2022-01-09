@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 PAD = 10
-FILENAME = "p5"
+FILENAME = "p6"
 
 
 
@@ -53,12 +53,9 @@ def pentomino_from_image(source_file):
 
     rows, cols = bin.shape
     print("number of rows and collumns ; ", rows, cols)    
-
-    # NEED TO CLEAN THIS PART
-
     # this section warps the image to that the grid is square (sides should be parallel)
     # taken from https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_geometric_transformations/py_geometric_transformations.html#geometric-transformations
-    # pretty much directly (as much as there's not many ways to get the same thing...)
+    # pretty much directly (there's not many ways to get the same thing...)
     pts1 = np.float32(points)
     pts2 = np.float32([[PAD, PAD],[PAD, cols-PAD], [cols-PAD, cols-PAD], [cols-PAD, PAD]])
     print(pts1, pts2)
@@ -85,7 +82,7 @@ def pentomino_from_image(source_file):
 
     # from here on we will be working with the cropped image
     rows, cols = cropped.shape
-    # calculations as to the pixel size of one square
+    # calculations about the size of one square
     num_sqr = int(input("enter the number of squares along one side of the pentomino problem "))
     # we need a tuple of ints : we can't have half a pixel
     sqr_size = ((int(round(rows-(2*PAD))/num_sqr)),int(round((cols-(2*PAD))/num_sqr)))
@@ -95,8 +92,6 @@ def pentomino_from_image(source_file):
     
     for i in range(num_sqr):
         for j in range(num_sqr):
-            # cell (i, j) = cropped[i:i+1, j:j+1]
-            # could be a function that returns the cropped image
             case_tight = cropped[PAD+(i*sqr_size[0])+tight_margin:PAD+((i+1)*sqr_size[0])-tight_margin, PAD+(j*sqr_size[1])+tight_margin:(PAD+(j+1)*sqr_size[1])-tight_margin]
             tight_cases[(i, j)] = case_tight
 
@@ -111,8 +106,6 @@ def pentomino_from_image(source_file):
     if save == "yes":
         for i in range(num_sqr):
             for j in range(num_sqr):
-                # cell (i, j) = cropped[i:i+1, j:j+1]
-                # could be a function that returns the cropped image
                 case = tight_cases[(i, j)]
                 save_path = os.path.join(os.getcwd(), "tight_cases/{}/{}_{}.jpg".format(FILENAME, i, j))
                 cv2.imwrite(save_path, case)
@@ -123,8 +116,6 @@ def pentomino_from_image(source_file):
     
     for i in range(num_sqr):
         for j in range(num_sqr):
-            # cell (i, j) = cropped[i:i+1, j:j+1]
-            # could be a function that returns the cropped image
             case_loose = cropped[PAD+(i*sqr_size[0])-margin:PAD+((i+1)*sqr_size[0])+margin, PAD+(j*sqr_size[1])-margin:(PAD+(j+1)*sqr_size[1])+margin]
             loose_cases[(i, j)] = case_loose
 
@@ -139,8 +130,6 @@ def pentomino_from_image(source_file):
     if save == "yes":
         for i in range(num_sqr):
             for j in range(num_sqr):
-                # cell (i, j) = cropped[i:i+1, j:j+1]
-                # could be a function that returns the cropped image
                 case_loose = loose_cases[(i, j)]
                 save_path = os.path.join(os.getcwd(), "loose_cases/{}/{}_{}.jpg".format(FILENAME, i, j))
                 cv2.imwrite(save_path, case_loose)
@@ -156,11 +145,10 @@ def main():
     print("this section is still in development")
 
     # makes a pentomino from a source file
-
     source_file = f"images/{FILENAME}.jpg"
 
     # extracts a preprocessed image for each cell into a dictionary {(i, j):cv2.img} for every cell coordinate (i, j)
-    cell_images = pentomino_from_image(source_file)
+    pentomino_from_image(source_file)
 
 
 if __name__ == "__main__":
