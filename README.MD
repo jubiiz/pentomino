@@ -1,7 +1,5 @@
 SUGURU SOLVER
 
-I know, the name of the repository (and of the whole project up to now) is wrong.
-These kinds of problems (like in the images folder) are called suguru, regions of size 5 are called pentomino (4 is tetramino, 3 is trimino, etc etc)
 This personnal project was meant to test my ability to build a big project from the ground up (from idea to result, with no premade youtube tutorial available). I also practiced using github and git in the process: all my coordination was done via those two tools. 
 
 Although it is far from user friendly, I am able to use it to solve 20x20 extra-hard sugurus in less than an hour. These usually take upwards of 5 hours by hand. Just for that, I consider it a success.
