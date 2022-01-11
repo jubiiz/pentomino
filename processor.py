@@ -29,7 +29,7 @@ def extract_corners(img):
                 max_a = a
     return(biggest)
 
-def pentomino_from_image(source_file):
+def suguru_from_image(source_file):
     """
     source_file : string name of img file from cwd (normally images/{imgname}.{img_format})
     """
@@ -40,7 +40,7 @@ def pentomino_from_image(source_file):
     img = cv2.resize(img, (400, 450))
 
     # this next section records the four corner of the image (automatically)
-    #thresholds the image ; we need an image of size approx 300:500 (arbitrary, may be made better)
+    # thresholds the image ; we need an image of size approx 300:500 (arbitrary, may be made better)
     _, bin = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
     # shows the image used
     bin = cv2.bitwise_not(bin)
@@ -83,7 +83,7 @@ def pentomino_from_image(source_file):
     # from here on we will be working with the cropped image
     rows, cols = cropped.shape
     # calculations about the size of one square
-    num_sqr = int(input("enter the number of squares along one side of the pentomino problem "))
+    num_sqr = int(input("enter the number of squares along one side of the suguru problem "))
     # we need a tuple of ints : we can't have half a pixel
     sqr_size = ((int(round(rows-(2*PAD))/num_sqr)),int(round((cols-(2*PAD))/num_sqr)))
 
@@ -144,11 +144,11 @@ def pentomino_from_image(source_file):
 def main():
     print("this section is still in development")
 
-    # makes a pentomino from a source file
+    # makes a suguru from a source file
     source_file = f"images/{FILENAME}.jpg"
 
     # extracts a preprocessed image for each cell into a dictionary {(i, j):cv2.img} for every cell coordinate (i, j)
-    pentomino_from_image(source_file)
+    suguru_from_image(source_file)
 
 
 if __name__ == "__main__":
