@@ -1,4 +1,4 @@
-# this file has as purpose to evaluate the model with the cases of the pentomino
+# this file has as purpose to evaluate the model with the cases of the suguru
 import tensorflow as tf
 import numpy as np
 from matplotlib import pyplot as plt

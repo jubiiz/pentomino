@@ -4,7 +4,7 @@ import numpy as np
 import math
 from processor import *
 from sides import *
-from numext1 import *
+from numext1 import nums_from_file
 from matplotlib import pyplot as plt
 
 class Cell():
@@ -12,7 +12,7 @@ class Cell():
         self.value = value
         self.coordinates = coordinates
         self.sides = sides
-        self.pentomino = None
+        self.region = None
 
     def find_neighbors_proxi(self, problem_size):
         """
@@ -36,7 +36,7 @@ class Grid():
         from text files containing the numbers and edge types for each square,
         builds an nxn array of cell objects.
 
-        Then builds a list of pentomino from edge information
+        Then builds a list of regions from edge information
         """
         self.size = (5, 5)
 
@@ -46,7 +46,7 @@ class Grid():
 
         # builds array of cells
         self.cells = []
-        all_cells = []   # 1d list of cells for pentomino frontier search
+        all_cells = []   # 1d list of cells for region frontier search
         row = []
         for i in range(len(num_list)):
             num_row = num_list[i]
@@ -60,29 +60,29 @@ class Grid():
             self.cells.append(row)
             row = []
 
-        # builds list of pentominos
-        self.pentominos = []
+        # builds list of regions
+        self.regions = []
         while len(all_cells) != 0:
             current = all_cells[0]
-            pentomino = self.find_pentomino(current.coordinates)
-            self.pentominos.append(pentomino)
-            for cell in pentomino:
+            region = self.find_region(current.coordinates)
+            self.regions.append(region)
+            for cell in region:
                 try:
                     all_cells.remove(cell)
                 except Exception:
                     print(cell.coordinates)
 
-        # adds all pentomino to cell
-        for p in self.pentominos:
-            for cell in p:
-                cell.pentomino = p
+        # adds all regions to cell
+        for r in self.regions:
+            for cell in r:
+                cell.region = r
 
         self.domains = {}
-        for pentomino in self.pentominos:
-            lp = len(pentomino) # length pentomino
-            for cell in pentomino:
+        for region in self.regions:
+            ls = len(region) # length region
+            for cell in region:
                 if cell.value == 0:
-                    self.domains[cell] = list(range(lp, 0, -1)) # like 5, 4, 3, 2, 1 so higher values are taken first: less neighbor domain values ruled out by them
+                    self.domains[cell] = list(range(ls, 0, -1)) # like 5, 4, 3, 2, 1 so higher values are taken first: less neighbor domain values ruled out by them
                 else:
                     self.domains[cell] = [cell.value]
         print("initialization done")
@@ -131,11 +131,11 @@ class Grid():
 
     def neighbors(self, cell):
         neighbors = []
-        for p in self.pentominos: 
-            # this is the right pentomino:
-            # other cells in the same pentomino are neighbors
-            if cell in p:
-                for other_cell in p:
+        for r in self.regions: 
+            # this is the right region:
+            # other cells in the same region are neighbors
+            if cell in r:
+                for other_cell in r:
                     if cell is not other_cell:
                         neighbors.append(other_cell)
         for coords in cell.find_neighbors_proxi(self.size):
@@ -152,7 +152,7 @@ class Grid():
     def is_consistent(self, assignment):
         """ 
         return True only if there are no two neighbor cells with a same value
-        it doesn't check if a value is higher than supposed to (for a pentomino)
+        it doesn't check if a value is higher than supposed to (for a region)
         because it removes unfit values during domain creation
         """ 
         for cell in assignment:
@@ -217,13 +217,13 @@ class Grid():
     def arc_consistency(self):
         # add arcs to a list of all arcs
         self.cc_arcs = [] # cell cell arcs
-        self.cp_arcs = [] # cell pentomino arcs
+        self.cr_arcs = [] # cell region arcs
         for cellx in self.domains:
             for celly in self.neighbors(cellx):
                 self.cc_arcs.append((cellx, celly))
-                cp_arc = (cellx, celly.pentomino)
-                if cp_arc not in self.cp_arcs and celly.pentomino is not cellx.pentomino: 
-                    self.cp_arcs.append(cp_arc)
+                cr_arc = (cellx, celly.region)
+                if cr_arc not in self.cr_arcs and celly.region is not cellx.region: 
+                    self.cr_arcs.append(cr_arc)
         
         # check every arc, if they have to be changed then add all new arcs to list
         while True:
@@ -238,23 +238,23 @@ class Grid():
                     for cellz in self.neighbors(cellx):
                         if cellz != celly:
                             self.cc_arcs.append((cellz, cellx))
-                        if (cellz, cellx.pentomino) not in self.cp_arcs:
-                            self.cp_arcs.append((cellz, cellx.pentomino))
+                        if (cellz, cellx.region) not in self.cr_arcs:
+                            self.cr_arcs.append((cellz, cellx.region))
 
-            elif len(self.cp_arcs) != 0:
-                print("cp")
-                # check consistency between cellx and pentomino_y
-                cellx, py = self.cp_arcs.pop()
+            elif len(self.cr_arcs) != 0:
+                print("cr")
+                # check consistency between cellx and region_y
+                cellx, ry = self.cr_arcs.pop()
                 if cellx.coordinates == (19, 13):
-                    print("here_cp")
-                if self.arc_reduce_cp(cellx, py):
+                    print("here_cr")
+                if self.arc_reduce_cr(cellx, ry):
                     if len(self.domains[cellx]) == 0:
-                        print(f"error during arc-consistency-cp: cannot make arc consistent because of cell {cellx.coordinates}")
+                        print(f"error during arc-consistency-cr: cannot make arc consistent because of cell {cellx.coordinates}")
                         return(False)
                     for cellz in self.neighbors(cellx):
                         self.cc_arcs.append((cellz, cellx))
-                        if (cellz, cellx.pentomino) not in self.cp_arcs and cellz.pentomino is not cellx.pentomino:
-                            self.cp_arcs.append((cellz, cellx.pentomino))
+                        if (cellz, cellx.region) not in self.cr_arcs and cellz.region is not cellx.region:
+                            self.cr_arcs.append((cellz, cellx.region))
             else:
                 break
 
@@ -270,11 +270,11 @@ class Grid():
         return(True)
 
     def unique_values(self):
-        # for every pentomino, make a list of each possible domain value, and which cell has it in its domain
+        # for every region, make a list of each possible domain value, and which cell has it in its domain
         change = False
-        for pentomino in self.pentominos:
-            numrange = {i+1:[] for i in range(len(pentomino))}
-            for cell in pentomino:
+        for region in self.regions:
+            numrange = {i+1:[] for i in range(len(region))}
+            for cell in region:
                 for d_val in self.domains[cell]:
                     numrange[d_val].append(cell)
             
@@ -322,18 +322,18 @@ class Grid():
                 change = True
         return(change)
 
-    def arc_reduce_cp(self, cellx, py):
+    def arc_reduce_cr(self, cellx, ry):
         """
         for every value in cellx,
-        can py be completed?
+        can ry be completed?
         """
         affected_cells = self.neighbors(cellx)
         change = False
         for vx in self.domains[cellx]:
-            if vx in range(1, len(py)+1): # if vx has to be in py, check if it can still be there
+            if vx in range(1, len(ry)+1): # if vx has to be in py, check if it can still be there
                 present = False
-                for p_cell in py: # is there at least 1 cell that can take that value
-                    if vx in self.domains[p_cell] and p_cell not in affected_cells: # value is present in this cell's domain, and is unaffected by vx
+                for r_cell in ry: # is there at least 1 cell that can take that value
+                    if vx in self.domains[r_cell] and r_cell not in affected_cells: # value is present in this cell's domain, and is unaffected by vx
                         present = True
                 if present == False: # cannot have this value in the pentomino
                     change = True
@@ -342,13 +342,13 @@ class Grid():
 
     def order_domain_values(self, cell):
         """
-        orders the domain values such that the values that are least present in the cell's pentomino are taken first
+        orders the domain values such that the values that are least present in the cell's region are taken first
         """
-        for pentomino in self.pentominos:
+        for region in self.regions:
             # we need only the pentomino in which our cell is
-            if cell in pentomino:
+            if cell in region:
                 scores = {i:0 for i in self.domains[cell]}
-                for other_cell in pentomino:
+                for other_cell in region:
                     for d_val in self.domains[other_cell]:
                         if d_val in scores:
                             scores[d_val] += 1
@@ -357,37 +357,37 @@ class Grid():
                 scores = {i:j for i, j in sorted(scores.items(), key=lambda item: item[1])}
         return(scores.keys())
 
-    def find_pentomino(self, cell_coords):
+    def find_region(self, cell_coords):
         """
-        finds the rest of the cells in the same pentomino as cell_coords (excluding cell_coords)
+        finds the rest of the cells in the same region as cell_coords (excluding cell_coords)
         returns a list of cell objects
         """
-         # current cell in the pentomino (to differentiate from current cell in grid)
-        p_current = self.cells[cell_coords[0]][cell_coords[1]]
-        frontier = [p_current]
-        pentomino = []
+         # current cell in the region (to differentiate from current cell in grid)
+        r_current = self.cells[cell_coords[0]][cell_coords[1]]
+        frontier = [r_current]
+        region = []
         while len(frontier) != 0:           
-            p_current = frontier.pop()
-            pentomino.append(p_current)
+            r_current = frontier.pop()
+            region.append(r_current)
             # adds all neighbours that arent already in frontier or pentomino to frontier
-            for i in range(len(p_current.sides)):
-                side = p_current.sides[i]
+            for i in range(len(r_current.sides)):
+                side = r_current.sides[i]
                 if side == 0: # if there is no side here, there is neighbour beside
                     axis = (i)%2 # 1 for x, 0 for y (matrices order)
                     sign = ((((i+1)//2)%2)*2)-1 # ±1
-                    new_coords = list(p_current.coordinates)
+                    new_coords = list(r_current.coordinates)
                     new_coords[axis]+=sign                   
                     new_x, new_y =  tuple(new_coords)
                     new_cell= self.cells[new_x][new_y]
                     # if it's not already explored, add it to frontier
-                    if new_cell not in pentomino and new_cell not in frontier:
+                    if new_cell not in region and new_cell not in frontier:
                         frontier.append(new_cell)
-        if len(pentomino) > 5:
+        if len(region) > 5:
             print("pentomino error ")
-            for cell in pentomino:
+            for cell in region:
                 print(cell.coordinates)
             return(1)
-        return(pentomino)
+        return(region)
 
 
 def main():
